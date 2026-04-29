@@ -1,0 +1,88 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { useTranslations } from '../i18n/utils';
+
+const lang = 'en';
+const t = useTranslations(lang);
+
+const researchAreas = [
+  {
+    id: 'aries',
+    title: 'Project ARIES',
+    subtitle: 'Antimicrobial Resistance Identification & Epidemiological Surveillance',
+    description:
+      'ARIES is a multisite surveillance study monitoring the emergence and spread of antimicrobial-resistant organisms (AROs) in Brazilian hospitals. The project integrates whole-genome sequencing (WGS), clinical data, and environmental sampling to characterize resistance mechanisms and transmission networks.',
+    tags: ['AMR', 'WGS', 'Surveillance', 'Genomics'],
+    icon: 'chart',
+  },
+  {
+    id: 'diagnostics',
+    title: 'Rapid Diagnostics',
+    subtitle: 'Point-of-care & molecular testing for infectious diseases',
+    description:
+      'We evaluate and validate novel rapid diagnostic platforms (PCR panels, LAMP, CRISPR-based assays) for timely identification of pathogens and resistance genes directly from clinical specimens.',
+    tags: ['PCR', 'LAMP', 'Point-of-care', 'CRISPR'],
+    icon: 'microscope',
+  },
+  {
+    id: 'epidemiology',
+    title: 'Molecular Epidemiology',
+    subtitle: 'Outbreak investigation and genomic cluster analysis',
+    description:
+      'Using advanced phylogenomic and bioinformatic pipelines, we reconstruct transmission chains of nosocomial pathogens such as carbapenem-resistant Klebsiella pneumoniae, Acinetobacter baumannii, and MRSA.',
+    tags: ['Phylogenomics', 'Nosocomial', 'CRKP', 'MRSA'],
+    icon: 'network',
+  },
+  {
+    id: 'antifungals',
+    title: 'Antifungal Resistance',
+    subtitle: 'Candida and emerging fungal pathogens',
+    description:
+      'We investigate the mechanisms and clinical impact of antifungal resistance, including azole and echinocandin resistance in Candida species and emerging pathogens such as Candida auris.',
+    tags: ['Candida', 'Azoles', 'Echinocandins', 'C. auris'],
+    icon: 'lab',
+  },
+];
+
+const iconMap: Record<string, string> = {
+  chart: 'M3 3v18h18M7 16l4-4 4 4 4-8',
+  microscope: 'M9 3h6M9 3a6 6 0 0 0 0 12h6a6 6 0 0 0 0-12M12 15v6M9 21h6',
+  network: 'M22 12h-4l-3 9L9 3l-3 9H2',
+  lab: 'M14.5 2v17.5c0 1.4-1.1 2.5-2.5 2.5s-2.5-1.1-2.5-2.5V2M8.5 2h7M6 6h12',
+};
+---
+
+<Layout title={t('research.title')} lang={lang}>
+
+  <div class="bg-lemc-blue text-white py-14 px-4">
+    <div class="max-w-4xl mx-auto">
+      <h1 class="text-4xl font-bold mb-3">{t('research.title')}</h1>
+      <p class="text-blue-200 text-lg">{t('research.subtitle')}</p>
+    </div>
+  </div>
+
+  <div class="max-w-5xl mx-auto px-4 py-16 space-y-8">
+    {researchAreas.map((area) => (
+      <section id={area.id} class="bg-white rounded-2xl border border-slate-100 shadow-sm p-8 scroll-mt-20">
+        <div class="flex items-start gap-6">
+          <div class="shrink-0 w-12 h-12 rounded-xl bg-lemc-blue/10 flex items-center justify-center">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="text-lemc-blue" aria-hidden="true">
+              <path d={iconMap[area.icon]}/>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h2 class="text-xl font-bold text-lemc-blue mb-1">{area.title}</h2>
+            <p class="text-lemc-green text-sm font-medium mb-3">{area.subtitle}</p>
+            <p class="text-slate-600 leading-relaxed mb-4">{area.description}</p>
+            <div class="flex flex-wrap gap-2">
+              {area.tags.map((tag) => (
+                <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-full font-medium">{tag}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    ))}
+  </div>
+
+</Layout>

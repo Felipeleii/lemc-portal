@@ -1,0 +1,55 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { useTranslations } from '../../../i18n/utils';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const allNews = await getCollection('news');
+  return allNews.map((article) => ({
+    params: { slug: article.slug },
+    props: { article },
+  }));
+}
+
+const { article } = Astro.props;
+const { Content } = await article.render();
+
+const lang = 'pt';
+const t = useTranslations(lang);
+---
+
+<Layout title={article.data.titlePt ?? article.data.title} lang={lang}>
+
+  <article class="max-w-3xl mx-auto px-4 py-16">
+
+    <a href="/pt/news" class="inline-flex items-center gap-1 text-lemc-green text-sm font-medium hover:underline mb-8">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Voltar às Notícias
+    </a>
+
+    <header class="mb-10">
+      <time class="text-sm text-slate-400 block mb-3">
+        {article.data.date.toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' })}
+      </time>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-lemc-blue leading-tight mb-4">
+        {article.data.titlePt ?? article.data.title}
+      </h1>
+      <p class="text-slate-600 text-lg leading-relaxed">{article.data.summaryPt ?? article.data.summary}</p>
+      {article.data.tags.length > 0 && (
+        <div class="flex flex-wrap gap-2 mt-4">
+          {article.data.tags.map((tag) => (
+            <span class="text-xs bg-lemc-blue/10 text-lemc-blue px-2.5 py-1 rounded-full font-medium">{tag}</span>
+          ))}
+        </div>
+      )}
+    </header>
+
+    <div class="prose prose-slate prose-headings:text-lemc-blue prose-a:text-lemc-green max-w-none">
+      <Content />
+    </div>
+
+  </article>
+
+</Layout>

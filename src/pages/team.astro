@@ -1,0 +1,82 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { useTranslations } from '../i18n/utils';
+
+const lang = 'en';
+const t = useTranslations(lang);
+
+const team = [
+  {
+    name: 'Prof. Dr. Ana Paula Streling',
+    role: t('team.role.pi'),
+    specialty: 'Clinical Microbiology & Infectious Diseases',
+    orcid: 'https://orcid.org/0000-0000-0000-0001',
+    image: null,
+    initials: 'AS',
+  },
+  {
+    name: 'Dr. Felipe Lei',
+    role: t('team.role.researcher'),
+    specialty: 'Antimicrobial Resistance Genomics',
+    orcid: 'https://orcid.org/0000-0000-0000-0002',
+    image: null,
+    initials: 'FL',
+  },
+  {
+    name: 'MSc. Candidate',
+    role: t('team.role.student'),
+    specialty: 'Molecular Epidemiology',
+    orcid: null,
+    image: null,
+    initials: 'MC',
+  },
+  {
+    name: 'PhD Candidate',
+    role: t('team.role.student'),
+    specialty: 'Antifungal Resistance · Candida auris',
+    orcid: null,
+    image: null,
+    initials: 'PC',
+  },
+];
+---
+
+<Layout title={t('team.title')} lang={lang}>
+
+  <div class="bg-lemc-blue text-white py-14 px-4">
+    <div class="max-w-4xl mx-auto">
+      <h1 class="text-4xl font-bold mb-3">{t('team.title')}</h1>
+      <p class="text-blue-200 text-lg">{t('team.subtitle')}</p>
+    </div>
+  </div>
+
+  <div class="max-w-5xl mx-auto px-4 py-16">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {team.map((member) => (
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex flex-col items-center text-center hover:shadow-md transition-shadow">
+          <!-- Avatar -->
+          <div class="w-16 h-16 rounded-full bg-lemc-blue flex items-center justify-center text-white font-bold text-xl mb-4">
+            {member.initials}
+          </div>
+          <h2 class="font-bold text-slate-800 text-sm mb-1 leading-snug">{member.name}</h2>
+          <p class="text-xs text-lemc-green font-semibold mb-2">{member.role}</p>
+          <p class="text-xs text-slate-500 mb-4 leading-relaxed">{member.specialty}</p>
+          {member.orcid && (
+            <a
+              href={member.orcid}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-xs inline-flex items-center gap-1.5 text-slate-400 hover:text-lemc-green transition-colors"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm-1.5 4.5a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm-.5 3.5h2v7H10V10z"/>
+              </svg>
+              ORCID
+            </a>
+          )}
+        </div>
+      ))}
+    </div>
+  </div>
+
+</Layout>

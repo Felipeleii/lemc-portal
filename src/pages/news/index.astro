@@ -1,0 +1,56 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { useTranslations } from '../../i18n/utils';
+import { getCollection } from 'astro:content';
+
+const lang = 'en';
+const t = useTranslations(lang);
+
+const allNews = await getCollection('news');
+allNews.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<Layout title={t('news.title')} lang={lang}>
+
+  <div class="bg-lemc-blue text-white py-14 px-4">
+    <div class="max-w-4xl mx-auto">
+      <h1 class="text-4xl font-bold mb-3">{t('news.title')}</h1>
+      <p class="text-blue-200 text-lg">{t('news.subtitle')}</p>
+    </div>
+  </div>
+
+  <div class="max-w-5xl mx-auto px-4 py-16">
+    {allNews.length > 0 ? (
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {allNews.map((article) => (
+          <article class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow flex flex-col">
+            <div class="h-1.5 bg-gradient-to-r from-lemc-blue to-lemc-green"></div>
+            <div class="p-6 flex flex-col flex-1">
+              <time class="text-xs text-slate-400 mb-2 block">
+                {article.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+              </time>
+              <h2 class="font-bold text-slate-800 mb-3 leading-snug flex-1">{article.data.title}</h2>
+              <p class="text-sm text-slate-500 leading-relaxed line-clamp-4 mb-4">{article.data.summary}</p>
+              <div class="flex items-center justify-between mt-auto">
+                <div class="flex flex-wrap gap-1.5">
+                  {article.data.tags.slice(0, 2).map((tag) => (
+                    <span class="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">{tag}</span>
+                  ))}
+                </div>
+                <a href={`/news/${article.slug}`} class="text-xs font-semibold text-lemc-green hover:underline shrink-0 ml-2">
+                  Read more →
+                </a>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    ) : (
+      <div class="text-center py-20">
+        <p class="text-slate-400">No news articles yet.</p>
+        <p class="text-slate-400 text-sm mt-1">Add Markdown files to <code>src/content/news/</code>.</p>
+      </div>
+    )}
+  </div>
+
+</Layout>

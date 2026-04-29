@@ -1,0 +1,115 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { useTranslations } from '../../i18n/utils';
+import { getCollection } from 'astro:content';
+import { fetchOrcidPublications } from '../../lib/orcid';
+
+const lang = 'pt';
+const t = useTranslations(lang);
+
+const localPubs = await getCollection('publications');
+localPubs.sort((a, b) => b.data.year - a.data.year);
+
+const orcidId = import.meta.env.ORCID_RESEARCHER_ID;
+let orcidPubs: Awaited<ReturnType<typeof fetchOrcidPublications>> = [];
+let orcidSynced = false;
+
+if (orcidId) {
+  orcidPubs = await fetchOrcidPublications(orcidId);
+  orcidSynced = orcidPubs.length > 0;
+}
+---
+
+<Layout title={t('publications.title')} lang={lang}>
+
+  <div class="bg-lemc-blue text-white py-14 px-4">
+    <div class="max-w-4xl mx-auto flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+      <div>
+        <h1 class="text-4xl font-bold mb-3">{t('publications.title')}</h1>
+        <p class="text-blue-200 text-lg">{t('publications.subtitle')}</p>
+      </div>
+      {orcidSynced && (
+        <div class="flex items-center gap-2 text-xs bg-lemc-green/30 border border-lemc-green/50 text-green-200 px-3 py-1.5 rounded-lg">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M20 6L9 17l-5-5"/>
+          </svg>
+          {t('publications.orcid_sync')}
+        </div>
+      )}
+    </div>
+  </div>
+
+  <div class="max-w-5xl mx-auto px-4 py-16">
+
+    {orcidSynced && orcidPubs.length > 0 && (
+      <section class="mb-12">
+        <h2 class="text-lg font-bold text-lemc-blue mb-4">Publicações via ORCID</h2>
+        <ul class="space-y-3">
+          {orcidPubs.map((pub) => (
+            <li class="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
+              <div class="flex items-start justify-between gap-4">
+                <div>
+                  <h3 class="font-semibold text-slate-800 mb-1 leading-snug">{pub.title}</h3>
+                  <p class="text-xs text-lemc-green font-medium">{pub.journal}{pub.year ? ` · ${pub.year}` : ''}</p>
+                </div>
+                {pub.url && (
+                  <a href={pub.url} target="_blank" rel="noopener noreferrer" class="shrink-0 text-xs bg-lemc-blue text-white px-2.5 py-1 rounded hover:bg-lemc-green transition-colors">
+                    {pub.doi ? 'DOI' : 'Link'}
+                  </a>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {localPubs.length > 0 && (
+      <section>
+        <h2 class="text-lg font-bold text-lemc-blue mb-4">Publicações</h2>
+        <ul class="space-y-4">
+          {localPubs.map((pub) => (
+            <li class="bg-white rounded-xl border border-slate-100 shadow-sm p-6 hover:shadow-md transition-shadow">
+              <div class="flex items-start justify-between gap-4 mb-3">
+                <h3 class="font-semibold text-slate-800 leading-snug flex-1">{pub.data.title}</h3>
+                {pub.data.doi && (
+                  <a
+                    href={`https://doi.org/${pub.data.doi}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="shrink-0 text-xs bg-lemc-blue text-white px-2.5 py-1 rounded hover:bg-lemc-green transition-colors"
+                  >
+                    DOI
+                  </a>
+                )}
+              </div>
+              <p class="text-sm text-slate-500 mb-2">{pub.data.authors.join(', ')}</p>
+              <div class="flex flex-wrap items-center gap-3">
+                <span class="text-xs text-lemc-green font-medium">{pub.data.journal}</span>
+                <span class="text-xs text-slate-400">·</span>
+                <span class="text-xs text-slate-500">{pub.data.year}</span>
+              </div>
+              {pub.data.abstract && (
+                <p class="mt-3 text-xs text-slate-500 leading-relaxed line-clamp-3">{pub.data.abstract}</p>
+              )}
+              {pub.data.tags.length > 0 && (
+                <div class="flex flex-wrap gap-1.5 mt-3">
+                  {pub.data.tags.map((tag) => (
+                    <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">{tag}</span>
+                  ))}
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {!orcidSynced && localPubs.length === 0 && (
+      <div class="text-center py-20">
+        <p class="text-slate-400 mb-2">Nenhuma publicação encontrada.</p>
+      </div>
+    )}
+  </div>
+
+</Layout>
